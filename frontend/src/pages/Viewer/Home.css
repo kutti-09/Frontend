@@ -1,0 +1,163 @@
+.home-root {
+  background-color: var(--mt-bg-dark);
+  min-height: 100vh;
+  color: var(--mt-text-primary);
+}
+
+/* ── Hero Banner ── */
+.hero-banner {
+  position: relative;
+  height: 75vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.hero-bg-gradient {
+  position: absolute;
+  inset: 0;
+  /* Deep black to purple cinematic gradient */
+  background: radial-gradient(circle at 70% 30%, rgba(147, 51, 234, 0.15), transparent 60%),
+              linear-gradient(135deg, #000 0%, #0a0514 100%);
+  transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.5) 40%,
+    transparent 100%
+  );
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 0 8%;
+  max-width: 900px;
+}
+
+/* ── Typography & Animation ── */
+.hero-title {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 900;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.03em;
+  color: #fff;
+  opacity: 0.2; /* Subtle presence initially */
+  transform: translateY(20px);
+  transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  text-transform: uppercase;
+}
+
+.hero-description {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--mt-text-secondary);
+  margin-bottom: 2.5rem;
+  max-width: 550px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.1s;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1.25rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.2s;
+}
+
+/* ── Hover States ── */
+.hero-banner:hover .hero-bg-gradient {
+  transform: scale(1.15);
+}
+
+.hero-banner:hover .hero-title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-banner:hover .hero-description {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-banner:hover .hero-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Buttons ── */
+.btn-hero {
+  padding: 0.9rem 2.5rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1.15rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.btn-watch {
+  background: white;
+  color: black;
+}
+
+.btn-watch:hover {
+  background: #f0f0f0;
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.btn-details {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.btn-details:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.08);
+}
+
+/* ── Content Section ── */
+.home-content {
+  padding: 4rem 8%;
+}
+
+.movie-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2rem;
+}
+
+.movie-placeholder {
+  aspect-ratio: 16/9;
+  background-color: var(--mt-bg-panel);
+  border-radius: 10px;
+  border: 1px solid var(--mt-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mt-text-secondary);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.movie-placeholder:hover {
+    border-color: var(--mt-purple-primary);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.1);
+}

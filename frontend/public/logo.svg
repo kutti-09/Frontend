@@ -1,0 +1,31 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="mt_disk_grad" cx="50%" cy="45%" r="70%">
+      <stop offset="0%" stop-color="#121212" />
+      <stop offset="70%" stop-color="#050505" />
+      <stop offset="100%" stop-color="#000000" />
+    </radialGradient>
+    <linearGradient id="mt_ring_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C084FC" />
+      <stop offset="45%" stop-color="#9333EA" />
+      <stop offset="100%" stop-color="#6B21A8" />
+    </linearGradient>
+    <filter id="mt_ring_glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <linearGradient id="mt_play_grad" x1="30%" y1="30%" x2="85%" y2="60%">
+      <stop offset="0%" stop-color="#C084FC" />
+      <stop offset="100%" stop-color="#9333EA" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(4, 4)">
+    <circle cx="28" cy="28" r="28" fill="url(#mt_disk_grad)" />
+    <circle cx="28" cy="28" r="24" fill="none" stroke="url(#mt_ring_grad)" stroke-width="3" opacity="0.95" filter="url(#mt_ring_glow)" />
+    <circle cx="17.5" cy="19.2" r="2.8" fill="#BCA8FF" opacity="0.95" />
+    <path d="M24.5 21 L24.5 35 L36 28 Z" fill="url(#mt_play_grad)" />
+  </g>
+</svg>
