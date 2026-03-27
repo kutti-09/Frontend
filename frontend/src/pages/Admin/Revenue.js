@@ -9,7 +9,8 @@ export const Revenue = () => {
    });
    const [loading, setLoading] = useState(true);
 
-   const [revenueHistory, setRevenueHistory] = useState([]);
+   const [subscriptionRevenueHistory, setSubscriptionRevenueHistory] = useState([]);
+   const [adRevenueHistory, setAdRevenueHistory] = useState([]);
    const [arpuByPlan, setArpuByPlan] = useState([]);
    const [adYieldTrends, setAdYieldTrends] = useState([]);
    const [ctrFillRate, setCtrFillRate] = useState([]);
@@ -19,13 +20,15 @@ export const Revenue = () => {
          try {
             setLoading(true);
             const [
-               revenueData,
+               subRevData,
+               adRevData,
                arpuData,
                adYieldData,
                ctrFillData,
                mrr, arr, arpu, adRev
             ] = await Promise.all([
-               adminService.getRevenueBreakdown(),
+               adminService.getSubscriptionRevenueHistory(),
+               adminService.getAdRevenueHistory(),
                adminService.getARPUByPlan(),
                adminService.getAdYieldTrends(),
                adminService.getPlatformCTR(),
@@ -35,7 +38,8 @@ export const Revenue = () => {
                adminService.getMonthlyAdRevenue()
             ]);
 
-            setRevenueHistory(revenueData || []);
+            setSubscriptionRevenueHistory(subRevData || []);
+            setAdRevenueHistory(adRevData || []);
             setArpuByPlan(arpuData || []);
             setAdYieldTrends(adYieldData || []);
             setCtrFillRate(ctrFillData || []);
@@ -68,6 +72,21 @@ export const Revenue = () => {
       textStyle: { color: '#fff' }
    };
 
+   const breakdownMonths = [...new Set([
+      ...subscriptionRevenueHistory.map(d => d.month),
+      ...adRevenueHistory.map(d => d.month)
+   ])].sort();
+
+   const subData = breakdownMonths.map(m => {
+      const item = subscriptionRevenueHistory.find(d => d.month === m);
+      return item ? (item.revenue || item.subs || item.value || Object.values(item).find(v => typeof v === 'number') || 0) : 0;
+   });
+
+   const adData = breakdownMonths.map(m => {
+      const item = adRevenueHistory.find(d => d.month === m);
+      return item ? (item.revenue || item.ads || item.value || Object.values(item).find(v => typeof v === 'number') || 0) : 0;
+   });
+
    const breakdownOption = {
       backgroundColor: 'transparent',
       tooltip: {
@@ -95,7 +114,7 @@ export const Revenue = () => {
       grid: { top: '8%', left: '3%', right: '4%', bottom: '12%', containLabel: true },
       xAxis: {
          type: 'category',
-         data: revenueHistory.map(d => d.month),
+         data: breakdownMonths,
          axisLine: { lineStyle: { color: '#333' } },
          axisLabel: { color: '#666' }
       },
@@ -108,12 +127,12 @@ export const Revenue = () => {
       series: [
          {
             name: 'Subscriptions', type: 'bar', stack: 'total',
-            data: revenueHistory.map(d => d.subs),
+            data: subData,
             itemStyle: { color: '#9333EA' }
          },
          {
             name: 'Ads', type: 'bar', stack: 'total',
-            data: revenueHistory.map(d => d.ads),
+            data: adData,
             itemStyle: { color: '#b49cceff', borderRadius: [4, 4, 0, 0] }
          }
       ]
