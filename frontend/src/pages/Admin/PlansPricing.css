@@ -122,7 +122,7 @@
   padding: 1.5rem;
   height: 100%;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.3s ease;
+    box-shadow 0.3s ease;
 }
 
 .chart-card:hover {
@@ -178,8 +178,13 @@
   position: relative;
 }
 
-.v-bar.monthly { background-color: #9333EA; }
-.v-bar.yearly { background-color: #C084FC; }
+.v-bar.monthly {
+  background-color: #9333EA;
+}
+
+.v-bar.yearly {
+  background-color: #C084FC;
+}
 
 .bar-label {
   margin-top: 10px;
@@ -262,8 +267,14 @@
   transition: width 0.6s ease;
 }
 
-.mix-segment.monthly { background-color: #9333EA; border-right: 2px solid #06060c; }
-.mix-segment.yearly { background-color: #C084FC; }
+.mix-segment.monthly {
+  background-color: #9333EA;
+  border-right: 2px solid #06060c;
+}
+
+.mix-segment.yearly {
+  background-color: #C084FC;
+}
 
 /* Legend */
 .chart-legend {
@@ -287,8 +298,13 @@
   border-radius: 2px;
 }
 
-.legend-color.monthly { background-color: #9333EA; }
-.legend-color.yearly { background-color: #C084FC; }
+.legend-color.monthly {
+  background-color: #9333EA;
+}
+
+.legend-color.yearly {
+  background-color: #C084FC;
+}
 
 /* Area Chart */
 .area-chart-container {
@@ -326,9 +342,17 @@
   border: 2px solid white;
 }
 
-.mrr-dot.basic { background-color: #C084FC; }
-.mrr-dot.standard { background-color: #9333EA; }
-.mrr-dot.premium { background-color: #FAFAFA; }
+.mrr-dot.basic {
+  background-color: #C084FC;
+}
+
+.mrr-dot.standard {
+  background-color: #9333EA;
+}
+
+.mrr-dot.premium {
+  background-color: #FAFAFA;
+}
 
 /* ── Interactive Tooltips ── */
 
@@ -368,7 +392,8 @@
 }
 
 /* Hover Effects */
-.v-bar:hover, .mix-segment:hover {
+.v-bar:hover,
+.mix-segment:hover {
   filter: brightness(1.2);
   cursor: pointer;
 }
@@ -376,4 +401,162 @@
 .mrr-trigger-rect:hover {
   fill: rgba(147, 51, 234, 0.05);
   cursor: pointer;
+}
+
+/* ── Add Plan Form Modal ── */
+.add-plan-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+}
+
+.add-plan-modal {
+  background-color: #1A1A24;
+  /* Darker panel background to match image */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 640px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #FAFAFA;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.add-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.add-plan-header h5 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #FAFAFA;
+}
+
+.btn-close-white {
+  filter: invert(1) grayscale(100%) brightness(200%);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.add-plan-modal .form-label {
+  color: #A1A1AA;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.add-plan-modal .form-control,
+.add-plan-modal .form-select {
+  background-color: #FAFAFA !important;
+  border: none !important;
+  color: #12121A !important;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-weight: 500;
+}
+
+.add-plan-modal .form-control::placeholder {
+  color: #A1A1AA;
+}
+
+.add-plan-modal .form-control:focus,
+.add-plan-modal .form-select:focus {
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.3) !important;
+  outline: none;
+}
+
+/* Custom Checkbox for categories */
+.mt-checkbox {
+  width: 1.1rem;
+  height: 1.1rem;
+  background-color: #FAFAFA;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.mt-checkbox:checked {
+  background-color: #9333EA;
+  border-color: #9333EA;
+}
+
+.add-plan-modal .form-check-label {
+  color: #FAFAFA;
+  font-size: 0.9rem;
+  margin-left: 0.3rem;
+  cursor: pointer;
+}
+
+/* Custom Switches */
+.mx-switch {
+  width: 2.5rem !important;
+  height: 1.25rem !important;
+  cursor: pointer;
+}
+
+.mx-switch:checked {
+  background-color: #9333EA !important;
+  border-color: #9333EA !important;
+}
+
+.mx-switch-blue:checked {
+  background-color: #3B82F6 !important;
+  /* Blue switch for 'Show Ads' as per image */
+  border-color: #3B82F6 !important;
+}
+
+/* Buttons */
+.add-plan-modal .btn-primary {
+  background-color: #8B5CF6 !important;
+  /* Periwinkle/purple */
+  border: none !important;
+  padding: 0.35rem 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.add-plan-modal .btn-primary:hover {
+  background-color: #7C3AED !important;
+}
+
+.add-plan-modal .btn-secondary {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border: none !important;
+  color: #E4E4E7 !important;
+  padding: 0.35rem 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.add-plan-modal .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  color: white !important;
 }

@@ -3,10 +3,10 @@ import { adminService } from '../../services/adminService';
 
 // Category Styles as a global constant for robust scoping
 const categoryStyles = {
-  'Subscription': { color: '#10B981', icon: 'bi-credit-card-2-front' },
-  'Content': { color: '#8B5CF6', icon: 'bi-play-circle' },
-  'Delivery': { color: '#EF4444', icon: 'bi-hdd-network' },
-  'AdOps': { color: '#3B82F6', icon: 'bi-broadcast' }
+   'Subscription': { color: '#10B981', icon: 'bi-credit-card-2-front' },
+   'Content': { color: '#8B5CF6', icon: 'bi-play-circle' },
+   'Delivery': { color: '#EF4444', icon: 'bi-hdd-network' },
+   'AdOps': { color: '#f53598ff', icon: 'bi-broadcast' }
 };
 
 const getCategoryColor = (cat) => categoryStyles[cat]?.color || '#94A3B8';
@@ -42,7 +42,7 @@ export const Notifications = () => {
       }
       return acc;
    }, { Subscription: 0, Content: 0, Delivery: 0, AdOps: 0 });
-   
+
    const totalUnread = unread.length || 1; // prevent div by zero
 
    // Alert Aging
@@ -55,6 +55,23 @@ export const Notifications = () => {
       else aging['>72h']++;
    });
 
+   const handleMarkAllRead = async () => {
+      try {
+         // 1. Make the Axios call via your service
+         await adminService.markAllNotificationsRead();
+
+         // 2. Optimistically update local state so the "New" badges disappear
+         const updatedNotifs = notifications.map(n => ({
+            ...n,
+            status: 'Read'
+         }));
+         setNotifications(updatedNotifs);
+
+         console.log("All notifications marked as read");
+      } catch (e) {
+         console.error("Failed to mark notifications as read", e);
+      }
+   };
    return (
       <div className="dashboard-content">
          <div className="page-header">
@@ -63,16 +80,17 @@ export const Notifications = () => {
          </div>
 
          <div className="d-flex justify-content-end mb-4" style={{ marginTop: '-1rem' }}>
-            <button className="btn btn-outline-purple btn-sm" style={{
-               borderRadius: '8px',
-               borderColor: 'rgba(147, 51, 234, 0.4)',
-               background: 'rgba(147, 51, 234, 0.05)',
-               color: '#fff',
-               fontSize: '0.8rem',
-               padding: '0.4rem 1.2rem',
-               transition: 'all 0.3s ease',
-               boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-            }}>
+            <button className="btn btn-outline-purple btn-sm" onClick={handleMarkAllRead}
+               style={{
+                  borderRadius: '8px',
+                  borderColor: 'rgba(147, 51, 234, 0.4)',
+                  background: 'rgba(147, 51, 234, 0.05)',
+                  color: '#fff',
+                  fontSize: '0.8rem',
+                  padding: '0.4rem 1.2rem',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+               }}>
                <i className="bi bi-check2-all me-2"></i>Mark all as read
             </button>
          </div>

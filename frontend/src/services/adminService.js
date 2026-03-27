@@ -108,7 +108,7 @@ export const adminService = {
     }
   },
 
-  
+
   getActiveSubscribersChart: async () => {
     try {
       const resp = await axios.get(`${API_URL}/subscription/admin/plan-distribution`, getAuthHeaders());
@@ -120,20 +120,20 @@ export const adminService = {
 
   getEngagementMetrics: async () => {
     try {
-       const resp = await axios.get(`${API_URL}/analytics/engagement`, getAuthHeaders());
-       return resp.data;
+      const resp = await axios.get(`${API_URL}/analytics/engagement`, getAuthHeaders());
+      return resp.data;
     } catch (e) {
-       return { dau: 0, mau: 0, completionRate: 0, avgBitrate: '0 Mbps' };
+      return { dau: 0, mau: 0, completionRate: 0, avgBitrate: '0 Mbps' };
     }
   },
 
   getAdDeliveryReports: async () => {
-     try {
-       const resp = await axios.get(`${API_URL}/analytics/addelivery`, getAuthHeaders());
-       return resp.data;
-     } catch (e) {
-       return [];
-     }
+    try {
+      const resp = await axios.get(`${API_URL}/analytics/addelivery`, getAuthHeaders());
+      return resp.data;
+    } catch (e) {
+      return [];
+    }
   },
 
   // ── New Dynamic Data Endpoints ──
@@ -169,17 +169,17 @@ export const adminService = {
   },
 
   getAudienceTrends: async () => {
-    const resp = await axios.get(`${API_URL}/analytics/admin/engagement-trends`, getAuthHeaders());
+    const resp = await axios.get(`${API_URL}/engagementReport/admin/engagement-trends`, getAuthHeaders());
     return resp.data;
   },
 
   getEngagementKPIs: async () => {
-    const resp = await axios.get(`${API_URL}/analytics/admin/engagement-kpis`, getAuthHeaders());
+    const resp = await axios.get(`${API_URL}/engagementReport/admin/engagement-kpis`, getAuthHeaders());
     return resp.data;
   },
 
   getWatchTimeTrends: async () => {
-    const resp = await axios.get(`${API_URL}/analytics/admin/watch-time-trends`, getAuthHeaders());
+    const resp = await axios.get(`${API_URL}/engagementReport/admin/watch-time-trends`, getAuthHeaders());
     return resp.data;
   },
 
@@ -188,13 +188,18 @@ export const adminService = {
     return resp.data;
   },
 
+  getExpiringGrants: async () => {
+    const resp = await axios.get(`${API_URL}/entitlement/admin/expiry-stats`, getAuthHeaders());
+    return resp.data;
+  },
+
   getEntitlementDistribution: async () => {
-    const resp = await axios.get(`${API_URL}/subscription/admin/entitlement-distribution`, getAuthHeaders());
+    const resp = await axios.get(`${API_URL}/entitlement/admin/entitlement-distribution`, getAuthHeaders());
     return resp.data;
   },
 
   getPolicyDrift: async (page = 0, size = 10) => {
-    const resp = await axios.get(`${API_URL}/policy/admin/drift?page=${page}&size=${size}`, getAuthHeaders());
+    const resp = await axios.get(`${API_URL}/entitlement/admin/policy-drift?page=${page}&size=${size}`, getAuthHeaders());
     return resp.data;
   },
 
@@ -205,10 +210,33 @@ export const adminService = {
 
   getNotifications: async () => {
     try {
-      const resp = await axios.get(`${API_URL}/notification/getAll`, getAuthHeaders());
+      const resp = await axios.get(`${API_URL}/notification/admin/getAll`, getAuthHeaders());
       return resp.data;
     } catch (e) {
       return [];
     }
+  },
+  markAllNotificationsRead: async () => {
+    try {
+      const resp = await axios.put(`${API_URL}/notification/admin/mark-all-read`, getAuthHeaders());
+      return resp.data;
+    } catch (e) {
+      return [];
+    }
+  },
+  // In adminService.js
+  addPlan: async (planData) => {
+    const resp = await axios.post(`${API_URL}/plan/admin/add`, planData, getAuthHeaders());
+    return resp.data;
+  },
+
+  updatePlan: async (planId, planData) => {
+    const resp = await axios.put(`${API_URL}/plan/admin/update/${planId}`, planData, getAuthHeaders());
+    return resp.data;
+  },
+
+  deletePlan: async (planId) => {
+    const resp = await axios.delete(`${API_URL}/plan/admin/delete/${planId}`, getAuthHeaders());
+    return resp.data;
   }
-};
+};

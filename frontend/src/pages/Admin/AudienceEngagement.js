@@ -23,7 +23,7 @@ export const AudienceEngagement = () => {
           adminService.getAudienceTrends(),
           adminService.getWatchTimeTrends()
         ]);
-        
+
         setMetrics({
           avgDau: kpis?.avgDau || 0,
           avgMau: kpis?.avgMau || 0,
@@ -78,7 +78,7 @@ export const AudienceEngagement = () => {
     },
     yAxis: {
       type: 'value',
-      min: 0, max: 60000, interval: 15000,
+      min: 0, max: 60, interval: 10,
       axisLine: { show: false },
       axisLabel: { color: '#666' },
       splitLine: { show: true, lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'dashed' } }
@@ -120,13 +120,13 @@ export const AudienceEngagement = () => {
     },
     yAxis: {
       type: 'value',
-      min: 0, max: 160000, interval: 40000,
+      min: 0, max: 24000, interval: 4000,
       axisLine: { show: false },
       axisLabel: { color: '#666' },
       splitLine: { show: true, lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'dashed' } }
     },
     series: [{
-      name: 'Watch Time', type: 'line', data: watchTimeTrend.map(d => d.value),
+      name: 'Watch Time', type: 'line', data: watchTimeTrend.map(d => d.watchTime),
       symbol: 'circle', symbolSize: 6,
       itemStyle: { color: '#fff', borderColor: '#9333EA', borderWidth: 2 },
       lineStyle: { width: 3, color: '#9333EA' },
@@ -146,14 +146,14 @@ export const AudienceEngagement = () => {
     <div className="dashboard-content">
       <div className="page-header d-flex justify-content-between align-items-center">
         <div>
-           <h1 className="page-title">Audience & Engagement</h1>
-           <p className="page-subtitle">Executive view of platform engagement</p>
+          <h1 className="page-title">Audience & Engagement</h1>
+          <p className="page-subtitle">Executive view of platform engagement</p>
         </div>
       </div>
 
       <div className="row g-4 mb-4">
         <div className="col-md-3">
-            <div className="metric-card">
+          <div className="metric-card">
             <div className="metric-header text-secondary mb-1">
               <span>Avg DAU (90d)</span>
               <i className="bi bi-people"></i>
@@ -163,7 +163,7 @@ export const AudienceEngagement = () => {
           </div>
         </div>
         <div className="col-md-3">
-            <div className="metric-card">
+          <div className="metric-card">
             <div className="metric-header text-secondary mb-1">
               <span>Avg MAU (90d)</span>
               <i className="bi bi-people-fill"></i>
@@ -173,7 +173,7 @@ export const AudienceEngagement = () => {
           </div>
         </div>
         <div className="col-md-3">
-            <div className="metric-card">
+          <div className="metric-card">
             <div className="metric-header text-secondary mb-1">
               <span>Avg Watch Time (30d)</span>
               <i className="bi bi-clock-history"></i>
@@ -183,7 +183,7 @@ export const AudienceEngagement = () => {
           </div>
         </div>
         <div className="col-md-3">
-            <div className="metric-card">
+          <div className="metric-card">
             <div className="metric-header text-secondary mb-1">
               <span>Avg Completion (30d)</span>
               <i className="bi bi-check2-circle"></i>
@@ -195,7 +195,7 @@ export const AudienceEngagement = () => {
       </div>
 
       {loading ? (
-         <div className="text-center mt-5"><div className="spinner-border text-light" role="status"></div></div>
+        <div className="text-center mt-5"><div className="spinner-border text-light" role="status"></div></div>
       ) : (
         <React.Fragment>
           <div className="full-width-chart-card">

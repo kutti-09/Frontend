@@ -4,8 +4,8 @@ import { adminService } from '../../services/adminService';
 
 export const Revenue = () => {
    const [metrics, setMetrics] = useState({
-      mrr: 0, arr: 0, arpu: 0, netAdds: 0, churnRate: 0,
-      adRev: 0, ctr: '0%', fillRate: '0%', ecpm: 0
+      mrr: 0, arr: 0, arpu: 0, netAdds: 0,
+      adRev: 0, ecpm: 0, ctr: '0%', fillRate: '0%'
    });
    const [loading, setLoading] = useState(true);
 
@@ -19,11 +19,11 @@ export const Revenue = () => {
          try {
             setLoading(true);
             const [
-              revenueData, 
-              arpuData, 
-              adYieldData, 
-              ctrFillData,
-              mrr, arr, arpu, adRev
+               revenueData,
+               arpuData,
+               adYieldData,
+               ctrFillData,
+               mrr, arr, arpu, adRev
             ] = await Promise.all([
                adminService.getRevenueBreakdown(),
                adminService.getARPUByPlan(),
@@ -44,13 +44,14 @@ export const Revenue = () => {
                mrr: mrr || 0,
                arr: arr || 0,
                arpu: arpu || 0,
-               netAdds: 0, 
-               churnRate: 0,
+               netAdds: 0,
                adRev: adRev || 0,
                ctr: ctrFillData?.[0]?.ctr || '0%',
                fillRate: ctrFillData?.[0]?.fillRate || '0%',
                ecpm: adYieldData?.[0]?.ecpm || 0
             });
+
+            console.log(metrics);
 
          } catch (e) {
             console.error(e);

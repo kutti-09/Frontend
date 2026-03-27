@@ -6,11 +6,11 @@ import './RolesPolicies.css';
 export const RolesPolicies = () => {
   const [loading, setLoading] = useState(true);
   const [totalUsers, setTotalUsers] = useState(0);
-  const [adminStats, setAdminStats] = useState({ active: 0, inactive: 0 });
+  const [adminStats, setAdminStats] = useState(0);
   const [roleDistribution, setRoleDistribution] = useState([]);
   const [entitlementScopeData, setEntitlementScopeData] = useState([]);
   const [driftData, setDriftData] = useState([]);
-  const [expiringGrants, setExpiringGrants] = useState({ lessThan7: 0, sevenTo30: 0, moreThan30: 0 });
+  const [expiringGrants, setExpiringGrants] = useState({ lessThan7Days: 0, sevenTo30Days: 0, moreThan30Days: 0 });
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
@@ -24,13 +24,28 @@ export const RolesPolicies = () => {
           adminService.getAdminStats(),
           adminService.getRoleDistribution(),
           adminService.getEntitlementDistribution(),
-          Promise.resolve({ lessThan7: 12, sevenTo30: 34, moreThan30: 89 })
+          adminService.getExpiringGrants()
         ]);
+        console.log("1. Total Users:", userCount);
+        console.log("2. Admin Stats Object:", stats);
+        console.log("3. Roles Map:", roles);
         setTotalUsers(userCount || 0);
-        setAdminStats(stats || { active: 0, inactive: 0 });
-        setRoleDistribution(roles || []);
-        setEntitlementScopeData(entitlements || []);
-        setExpiringGrants(grants);
+        setAdminStats(stats || 0);
+        if (roles && typeof roles === 'object' && !Array.isArray(roles)) {
+          setRoleDistribution(Object.entries(roles).map(([name, value]) => ({ name, value })));
+        } else {
+          setRoleDistribution(roles || []);
+        }
+
+        // 4. Entitlement Scope (TRANSFORM MAP TO ARRAY)
+        // Backend: { "All": 6, "Category": 3 } -> Frontend: [{name: "All", value: 6}]
+        if (entitlements && typeof entitlements === 'object' && !Array.isArray(entitlements)) {
+          setEntitlementScopeData(Object.entries(entitlements).map(([name, value]) => ({ name, value })));
+        } else {
+          setEntitlementScopeData(entitlements || []);
+        }
+
+        setExpiringGrants(grants || { lessThan7Days: 0, sevenTo30Days: 0, moreThan30Days: 0 });
       } catch (e) {
         console.error("Error fetching stats:", e);
       }
@@ -62,9 +77,9 @@ export const RolesPolicies = () => {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
     xAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }, axisLabel: { color: '#888' } },
-    yAxis: { 
-      type: 'category', 
-      data: roleDistribution.map(d => d.name).reverse(), 
+    yAxis: {
+      type: 'category',
+      data: roleDistribution.map(d => d.name).reverse(),
       axisLabel: { color: '#ccc', fontSize: 11 },
       axisLine: { lineStyle: { color: '#333' } }
     },
@@ -110,55 +125,49 @@ export const RolesPolicies = () => {
           <React.Fragment>
             {/* Metric Cards */}
             <div className="col-md-4">
-          <div className="metric-card">
-            <div className="metric-header text-secondary mb-1">
-              <span>Admin Accounts</span>
-              <i className="bi bi-shield-lock"></i>
+              <div className="metric-card">
+                <div className="metric-header text-secondary mb-1">
+                  <span>Admin Accounts</span>
+                  <i className="bi bi-shield-lock"></i>
+                </div>
+                <div className="metric-value me-2">{adminStats}</div>
+                <div className="metric-sub mt-2">Total</div>
+              </div>
             </div>
-            <div className="d-flex align-items-baseline">
-                <div className="metric-value me-2">{adminStats.active + adminStats.inactive}</div>
-                <div className="metric-sub">Total</div>
-            </div>
-            <div className="mt-3 small">
-              <span className="text-success me-3"><i className="bi bi-circle-fill me-1" style={{fontSize: '7px'}}></i> {adminStats.active} Active</span>
-              <span className="text-danger"><i className="bi bi-circle-fill me-1" style={{fontSize: '7px'}}></i> {adminStats.inactive} Inactive</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="col-md-4">
-          <div className="metric-card">
-            <div className="metric-header text-secondary mb-1">
-              <span>Total Users</span>
-              <i className="bi bi-people"></i>
+            <div className="col-md-4">
+              <div className="metric-card">
+                <div className="metric-header text-secondary mb-1">
+                  <span>Total Users</span>
+                  <i className="bi bi-people"></i>
+                </div>
+                <div className="metric-value total-users">{totalUsers.toLocaleString()}</div>
+                <div className="metric-sub mt-2">Platform population</div>
+              </div>
             </div>
-            <div className="metric-value total-users">{totalUsers.toLocaleString()}</div>
-            <div className="metric-sub mt-2">Platform population</div>
-          </div>
-        </div>
 
-        <div className="col-md-4">
-           <div className="metric-card">
-            <div className="metric-header text-secondary mb-1">
-              <span>Expiring Special Grants</span>
-              <i className="bi bi-hourglass-split"></i>
+            <div className="col-md-4">
+              <div className="metric-card">
+                <div className="metric-header text-secondary mb-1">
+                  <span>Expiring Special Grants</span>
+                  <i className="bi bi-hourglass-split"></i>
+                </div>
+                <div className="mt-2">
+                  <div className="d-flex justify-content-between text-secondary small mb-1">
+                    <span>&lt; 7 Days</span>
+                    <span className="text-danger fw-bold">{expiringGrants.lessThan7Days}</span>
+                  </div>
+                  <div className="d-flex justify-content-between text-secondary small mb-1">
+                    <span>7-30 Days</span>
+                    <span className="text-warning fw-bold">{expiringGrants.sevenTo30Days}</span>
+                  </div>
+                  <div className="d-flex justify-content-between text-secondary small">
+                    <span>&gt; 30 Days</span>
+                    <span className="text-success fw-bold">{expiringGrants.moreThan30Days}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mt-2">
-               <div className="d-flex justify-content-between text-secondary small mb-1">
-                  <span>&lt; 7 Days</span>
-                  <span className="text-danger fw-bold">{expiringGrants.lessThan7}</span>
-               </div>
-               <div className="d-flex justify-content-between text-secondary small mb-1">
-                  <span>7-30 Days</span>
-                  <span className="text-warning fw-bold">{expiringGrants.sevenTo30}</span>
-               </div>
-               <div className="d-flex justify-content-between text-secondary small">
-                  <span>&gt; 30 Days</span>
-                  <span className="text-success fw-bold">{expiringGrants.moreThan30}</span>
-               </div>
-            </div>
-          </div>
-        </div>
           </React.Fragment>
         )}
       </div>
@@ -194,7 +203,7 @@ export const RolesPolicies = () => {
       <div className="policy-drift-section">
         <h2 className="section-label">Policy Drift - Special Access Grants</h2>
         <p className="section-sublabel">Users with custom entitlements (not following default plan scope)</p>
-        
+
         <div className="drift-card">
           <div className="table-responsive">
             <table className="drift-table">
@@ -213,18 +222,18 @@ export const RolesPolicies = () => {
                     <td className="user-name-cell">{user.name}</td>
                     <td className="email-cell">{user.email}</td>
                     <td>
-                      <span className={`badge-mt badge-${user.scope.toLowerCase()}`}>
-                        {user.scope}
+                      <span className={`badge-mt badge-${user.contentScope}`}>
+                        {user.contentScope}
                       </span>
                     </td>
-                    <td className="date-cell">{user.granted}</td>
-                    <td className="date-cell">{user.expiry}</td>
+                    <td className="date-cell">{user.grantedDate}</td>
+                    <td className="date-cell">{user.expiryDate}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          
+
           {/* Pagination Controls */}
           {driftData.length > 0 && (
             <div className="table-pagination">
@@ -232,15 +241,15 @@ export const RolesPolicies = () => {
                 Page {currentPage} of {totalPages || 1}
               </div>
               <div className="pagination-btns">
-                <button 
-                  className="pag-btn" 
+                <button
+                  className="pag-btn"
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                 >
                   <i className="bi bi-chevron-left"></i>
                 </button>
-                <button 
-                  className="pag-btn" 
+                <button
+                  className="pag-btn"
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage >= totalPages}
                 >
