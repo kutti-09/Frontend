@@ -54,7 +54,7 @@ export const PlansPricing = () => {
   const [loading, setLoading] = useState(true);
   const [tooltip, setTooltip] = useState({ show: false, x: 0, y: 0, content: null });
   const [chartData, setChartData] = useState([]);
-  const [mrrData, setMrrData] = useState([]);
+  const [mrrData, setMrrData] = useState({ data: [], plans: [], maxVal: 1000 });
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPlanId, setEditingPlanId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -118,22 +118,37 @@ export const PlansPricing = () => {
       const raw = await adminService.getMrrByPlan();
       const normalized = normalizeMrrData(raw);
 
-      // Map to SVG coordinates
-      const mapped = normalized.map((entry, i) => {
-        const total = Object.entries(entry)
-          .filter(([key]) => key !== 'month')
-          .reduce((sum, [, val]) => sum + val, 0);
+      // Extract all unique plans from normalized
+      const allPlans = new Set();
+      normalized.forEach(entry => {
+        Object.keys(entry).forEach(k => {
+          if (k !== 'month') allPlans.add(k);
+        });
+      });
+      const plansArr = Array.from(allPlans);
 
-        return {
+      let maxVal = 0;
+      normalized.forEach(entry => {
+        plansArr.forEach(plan => {
+          if (entry[plan] > maxVal) maxVal = entry[plan];
+        });
+      });
+      maxVal = Math.ceil((maxVal || 10) / 1000) * 1000;
+      if (maxVal === 0) maxVal = 1000;
+
+      const mapped = normalized.map((entry, i) => {
+        const item = {
           label: entry.month,
           x: (i / (normalized.length - 1 || 1)) * 1000,
-          val: total,
-          basic: entry.Basic || 0,
-          standard: entry.Standard || 0,
-          premium: entry.Premium || 0
+          values: {}
         };
+        plansArr.forEach(plan => {
+          item.values[plan] = entry[plan] || 0;
+        });
+        return item;
       });
-      setMrrData(mapped);
+      
+      setMrrData({ data: mapped, plans: plansArr, maxVal });
     } catch (e) {
       console.error(e);
     } finally {
@@ -637,36 +652,39 @@ export const PlansPricing = () => {
                   </g>
 
                   <g fontSize="12" fill="rgba(255,255,255,0.3)">
-                    <text x="5" y="15">1200</text>
-                    <text x="5" y="90">900</text>
-                    <text x="5" y="165">600</text>
-                    <text x="5" y="240">300</text>
+                    <text x="5" y="15">{mrrData.maxVal}</text>
+                    <text x="5" y="90">{mrrData.maxVal * 0.75}</text>
+                    <text x="5" y="165">{mrrData.maxVal * 0.5}</text>
+                    <text x="5" y="240">{mrrData.maxVal * 0.25}</text>
                     <text x="5" y="295">0</text>
                   </g>
 
                   <g stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="4">
-                    {mrrData.map(d => (
+                    {mrrData.data.map(d => (
                       <line key={d.label} x1={d.x} y1="0" x2={d.x} y2="300" />
                     ))}
                   </g>
 
-                  <path
-                    d={`M ${mrrData.map(d => `${d.x} ${300 - (d.val / 4)}`).join(' L ')} L 1000 300 L 0 300 Z`}
-                    fill="url(#areaGradient)"
-                  />
-
-                  <path
-                    d={`M ${mrrData.map(d => `${d.x} ${300 - (d.val / 4)}`).join(' L ')}`}
-                    fill="none"
-                    stroke="#C084FC"
-                    strokeWidth="3"
-                    filter="url(#lineGlow)"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                  {mrrData.plans.map((plan, i) => {
+                    const color = ['#C084FC', '#9333EA', '#FAFAFA', '#60A5FA', '#34D399'][i % 5];
+                    const pathD = `M ${mrrData.data.map(d => `${d.x} ${300 - ((d.values[plan] || 0) / mrrData.maxVal) * 300}`).join(' L ')}`;
+                    
+                    return (
+                      <path
+                        key={plan}
+                        d={pathD}
+                        fill="none"
+                        stroke={color}
+                        strokeWidth="3"
+                        filter="url(#lineGlow)"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    );
+                  })}
 
                   {/* Invisible Trigger Areas for MRR Chart */}
-                  {mrrData.map((d, i) => (
+                  {mrrData.data.map((d, i) => (
                     <rect
                       key={i}
                       x={d.x - 50}
@@ -678,8 +696,15 @@ export const PlansPricing = () => {
                       onMouseEnter={(e) => handleMouseEnter(e, (
                         <>
                           <span className="tooltip-title">{d.label}</span>
-                          <div className="tooltip-row"><span>Total MRR:</span> <span>₹{d.val.toLocaleString()}</span></div>
-                          <div className="tooltip-row"><small>Click for Details</small></div>
+                          {mrrData.plans.map((plan, j) => {
+                            const color = ['#C084FC', '#9333EA', '#FAFAFA', '#60A5FA', '#34D399'][j % 5];
+                            return (
+                              <div key={plan} className="tooltip-row" style={{ color }}>
+                                <span>{plan}:</span> 
+                                <span style={{ color: '#FAFAFA' }}>₹{(d.values[plan] || 0).toLocaleString()}</span>
+                              </div>
+                            );
+                          })}
                         </>
                       ))}
                       onMouseLeave={handleMouseLeave}
@@ -687,12 +712,12 @@ export const PlansPricing = () => {
                   ))}
 
                   <g fontSize="13" fill="#FAFAFA" fontWeight="500">
-                    {mrrData.map((d, i) => (
+                    {mrrData.data.map((d, i) => (
                       <text
                         key={i}
                         x={d.x}
                         y="325"
-                        textAnchor={i === 0 ? 'start' : i === mrrData.length - 1 ? 'end' : 'middle'}
+                        textAnchor={i === 0 ? 'start' : i === mrrData.data.length - 1 ? 'end' : 'middle'}
                       >
                         {d.label}
                       </text>
@@ -703,18 +728,15 @@ export const PlansPricing = () => {
             </div>
 
             <div className="mrr-legend">
-              <div className="mrr-legend-item">
-                <div className="mrr-dot basic"></div>
-                <span style={{ color: '#C084FC' }}>Basic</span>
-              </div>
-              <div className="mrr-legend-item">
-                <div className="mrr-dot standard"></div>
-                <span style={{ color: '#9333EA' }}>Standard</span>
-              </div>
-              <div className="mrr-legend-item">
-                <div className="mrr-dot premium"></div>
-                <span style={{ color: '#FAFAFA' }}>Premium</span>
-              </div>
+              {mrrData.plans.map((plan, i) => {
+                const color = ['#C084FC', '#9333EA', '#FAFAFA', '#60A5FA', '#34D399'][i % 5];
+                return (
+                  <div key={plan} className="mrr-legend-item">
+                    <div className="mrr-dot" style={{ backgroundColor: color }}></div>
+                    <span style={{ color }}>{plan}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
