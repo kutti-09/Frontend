@@ -550,10 +550,24 @@ export const PlansPricing = () => {
                     <div
                       className="v-bar monthly"
                       style={{ height: `${data.monthly * 20}%` }}
+                      onMouseEnter={(e) => handleMouseEnter(e, (
+                        <>
+                          <span className="tooltip-title">{name} - Monthly</span>
+                          <div className="tooltip-row"><span>Count:</span> <span>{data.monthly}</span></div>
+                        </>
+                      ))}
+                      onMouseLeave={handleMouseLeave}
                     />
                     <div
                       className="v-bar yearly"
                       style={{ height: `${data.yearly * 20}%` }}
+                      onMouseEnter={(e) => handleMouseEnter(e, (
+                        <>
+                          <span className="tooltip-title">{name} - Yearly</span>
+                          <div className="tooltip-row"><span>Count:</span> <span>{data.yearly}</span></div>
+                        </>
+                      ))}
+                      onMouseLeave={handleMouseLeave}
                     />
                   </div>
                   <span className="bar-label">{name}</span>
@@ -670,26 +684,46 @@ export const PlansPricing = () => {
                     const pathD = `M ${mrrData.data.map(d => `${d.x} ${300 - ((d.values[plan] || 0) / mrrData.maxVal) * 300}`).join(' L ')}`;
                     
                     return (
-                      <path
-                        key={plan}
-                        d={pathD}
-                        fill="none"
-                        stroke={color}
-                        strokeWidth="3"
-                        filter="url(#lineGlow)"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                      <g key={plan}>
+                        <path
+                          d={pathD}
+                          fill="none"
+                          stroke={color}
+                          strokeWidth="3"
+                          filter="url(#lineGlow)"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        {mrrData.data.map((d, index) => (
+                          <circle
+                            key={`${plan}-${index}`}
+                            cx={d.x}
+                            cy={300 - ((d.values[plan] || 0) / mrrData.maxVal) * 300}
+                            r="5"
+                            fill={color}
+                            stroke="#12121A"
+                            strokeWidth="2"
+                            className="mrr-trigger-rect"
+                            onMouseEnter={(e) => handleMouseEnter(e, (
+                              <>
+                                <span className="tooltip-title">{d.label} - {plan}</span>
+                                <div className="tooltip-row"><span>MRR:</span> <span style={{ color: '#FAFAFA' }}>₹{(d.values[plan] || 0).toLocaleString()}</span></div>
+                              </>
+                            ))}
+                            onMouseLeave={handleMouseLeave}
+                          />
+                        ))}
+                      </g>
                     );
                   })}
 
-                  {/* Invisible Trigger Areas for MRR Chart */}
+                  {/* Invisible Trigger Areas for general X-axis MRR Chart sweep (optional background capture) */}
                   {mrrData.data.map((d, i) => (
                     <rect
                       key={i}
-                      x={d.x - 50}
+                      x={d.x - 40}
                       y="0"
-                      width="100"
+                      width="80"
                       height="300"
                       fill="transparent"
                       className="mrr-trigger-rect"
