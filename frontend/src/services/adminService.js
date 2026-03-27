@@ -143,8 +143,13 @@ export const adminService = {
     return resp.data;
   },
 
-  getRevenueBreakdown: async () => {
-    const resp = await axios.get(`${API_URL}/subscription/admin/charts/revenue-breakdown`, getAuthHeaders());
+  getSubscriptionRevenueHistory: async () => {
+    const resp = await axios.get(`${API_URL}/subscription/admin/charts/revenue-history`, getAuthHeaders());
+    return resp.data;
+  },
+
+  getAdRevenueHistory: async () => {
+    const resp = await axios.get(`${API_URL}/adDeliveryReport/admin/charts/revenue-history`, getAuthHeaders());
     return resp.data;
   },
 
@@ -239,4 +244,4 @@ export const adminService = {
     const resp = await axios.delete(`${API_URL}/plan/admin/delete/${planId}`, getAuthHeaders());
     return resp.data;
   }
-};
+};
