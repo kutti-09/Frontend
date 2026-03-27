@@ -74,8 +74,8 @@ export const PlansPricing = () => {
     const rect = e.currentTarget.getBoundingClientRect();
     setTooltip({
       show: true,
-      x: rect.left + window.scrollX + rect.width / 2,
-      y: rect.top + window.scrollY - 10,
+      x: rect.left + rect.width / 2,
+      y: rect.top - 10,
       content
     });
   };
@@ -139,7 +139,7 @@ export const PlansPricing = () => {
       const mapped = normalized.map((entry, i) => {
         const item = {
           label: entry.month,
-          x: (i / (normalized.length - 1 || 1)) * 1000,
+          x: 40 + (i / (normalized.length - 1 || 1)) * 920,
           values: {}
         };
         plansArr.forEach(plan => {
@@ -644,7 +644,7 @@ export const PlansPricing = () => {
             <h4 className="chart-title">MRR by Plan (Last 6 Months)</h4>
 
             <div className="area-chart-container">
-              <svg className="area-chart-svg" viewBox="0 -25 1000 350" preserveAspectRatio="none">
+              <svg className="area-chart-svg" viewBox="0 -25 1000 380" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#C084FC" stopOpacity="0.4" />
@@ -703,14 +703,7 @@ export const PlansPricing = () => {
                             fill={color}
                             stroke="#12121A"
                             strokeWidth="2"
-                            className="mrr-trigger-rect"
-                            onMouseEnter={(e) => handleMouseEnter(e, (
-                              <>
-                                <span className="tooltip-title">{d.label} - {plan}</span>
-                                <div className="tooltip-row"><span>MRR:</span> <span style={{ color: '#FAFAFA' }}>₹{(d.values[plan] || 0).toLocaleString()}</span></div>
-                              </>
-                            ))}
-                            onMouseLeave={handleMouseLeave}
+                            style={{ pointerEvents: 'none' }}
                           />
                         ))}
                       </g>
@@ -724,7 +717,7 @@ export const PlansPricing = () => {
                       x={d.x - 40}
                       y="0"
                       width="80"
-                      height="300"
+                      height="330"
                       fill="transparent"
                       className="mrr-trigger-rect"
                       onMouseEnter={(e) => handleMouseEnter(e, (
@@ -750,7 +743,7 @@ export const PlansPricing = () => {
                       <text
                         key={i}
                         x={d.x}
-                        y="325"
+                        y="340"
                         textAnchor={i === 0 ? 'start' : i === mrrData.data.length - 1 ? 'end' : 'middle'}
                       >
                         {d.label}
