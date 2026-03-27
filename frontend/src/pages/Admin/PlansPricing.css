@@ -357,7 +357,7 @@
 /* ── Interactive Tooltips ── */
 
 .mt-tooltip {
-  position: absolute;
+  position: fixed;
   background: rgba(11, 11, 24, 0.95);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(147, 51, 234, 0.3);
