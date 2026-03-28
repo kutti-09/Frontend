@@ -84,8 +84,8 @@ export const adminService = {
       const resp = await axios.get(`${API_URL}/user/getAll`, getAuthHeaders());
       return resp.data;
     } catch (e) {
-      console.warn("Could not fetch users, returning mock data");
-      return Array(1000).fill({});
+      console.warn("Could not fetch users");
+      return [];
     }
   },
 
@@ -223,10 +223,29 @@ export const adminService = {
   },
   markAllNotificationsRead: async () => {
     try {
-      const resp = await axios.put(`${API_URL}/notification/admin/mark-all-read`, getAuthHeaders());
+      const resp = await axios.put(`${API_URL}/notification/admin/mark-all-read`, {}, getAuthHeaders());
       return resp.data;
     } catch (e) {
-      return [];
+      console.error("Failed to mark all as read", e);
+      throw e;
+    }
+  },
+  markNotificationRead: async (id) => {
+    try {
+      const resp = await axios.put(`${API_URL}/notification/admin/mark-read/${id}`, {}, getAuthHeaders());
+      return resp.data;
+    } catch (e) {
+      console.error(`Failed to mark notification ${id} as read`, e);
+      throw e;
+    }
+  },
+  dismissNotification: async (id) => {
+    try {
+      const resp = await axios.delete(`${API_URL}/notification/admin/delete/${id}`, getAuthHeaders());
+      return resp.data;
+    } catch (e) {
+      console.error(`Failed to dismiss notification ${id}`, e);
+      throw e;
     }
   },
   // In adminService.js
@@ -242,6 +261,16 @@ export const adminService = {
 
   deletePlan: async (planId) => {
     const resp = await axios.delete(`${API_URL}/plan/admin/delete/${planId}`, getAuthHeaders());
+    return resp.data;
+  },
+
+  createUser: async (userData) => {
+    const resp = await axios.post(`${API_URL}/user/admin/create`, userData, getAuthHeaders());
+    return resp.data;
+  },
+
+  updateUser: async (userId, userData) => {
+    const resp = await axios.put(`${API_URL}/user/admin/update/${userId}`, userData, getAuthHeaders());
     return resp.data;
   }
 };
