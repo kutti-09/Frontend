@@ -1,7 +1,13 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 export const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const userName  = localStorage.getItem('name')  || 'Admin User';
+  const userEmail = localStorage.getItem('email') || 'admin@example.com';
+  const avatarInitial = userName.charAt(0).toUpperCase();
+
   const navItems = [
     { path: '/admin/overview', icon: 'bi-grid-1x2', label: 'Overview' },
     { path: '/admin/plans-pricing', icon: 'bi-credit-card', label: 'Plans & Pricing' },
@@ -11,6 +17,13 @@ export const Sidebar = () => {
     { path: '/admin/renewals', icon: 'bi-arrow-repeat', label: 'Renewals' },
     { path: '/admin/notifications', icon: 'bi-bell', label: 'Notifications' },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('user');
+    navigate('/');
+  };
 
   return (
     <aside className="admin-sidebar">
@@ -40,17 +53,17 @@ export const Sidebar = () => {
             <i className="bi bi-gear"></i>
             <span>Settings</span>
           </button>
-          <button className="popover-item logout-item">
+          <button className="popover-item logout-item" onClick={handleLogout}>
             <i className="bi bi-box-arrow-right"></i>
             <span>Logout</span>
           </button>
         </div>
         <div className="admin-avatar">
-          A
+          {avatarInitial}
         </div>
         <div className="admin-user-info">
-          <span className="admin-name">Admin User</span>
-          <span className="admin-email">admin@example.com</span>
+          <span className="admin-name">{userName}</span>
+          <span className="admin-email">{userEmail}</span>
         </div>
       </div>
     </aside>
