@@ -16,19 +16,19 @@ export const Notifications = () => {
    const [notifications, setNotifications] = useState([]);
    const [loading, setLoading] = useState(true);
 
-   useEffect(() => {
-      const fetchNotifs = async () => {
-         try {
-            setLoading(true);
-            const data = await adminService.getNotifications();
+   const fetchNotifs = async () => {
+      try {
+         setLoading(true);
+         const data = await adminService.getNotifications();
+         setNotifications(data || []);
+      } catch (e) {
+         console.error(e);
+      } finally {
+         setLoading(false);
+      }
+   };
 
-            setNotifications(data || []);
-         } catch (e) {
-            console.error(e);
-         } finally {
-            setLoading(false);
-         }
-      };
+   useEffect(() => {
       fetchNotifs();
    }, []);
 
@@ -57,19 +57,29 @@ export const Notifications = () => {
 
    const handleMarkAllRead = async () => {
       try {
-         // 1. Make the Axios call via your service
          await adminService.markAllNotificationsRead();
-
-         // 2. Optimistically update local state so the "New" badges disappear
-         const updatedNotifs = notifications.map(n => ({
-            ...n,
-            status: 'Read'
-         }));
-         setNotifications(updatedNotifs);
-
+         await fetchNotifs();
          console.log("All notifications marked as read");
       } catch (e) {
          console.error("Failed to mark notifications as read", e);
+      }
+   };
+
+   const handleMarkRead = async (id) => {
+      try {
+         await adminService.markNotificationRead(id);
+         await fetchNotifs();
+      } catch (e) {
+         console.error("Failed to mark notification as read", id, e);
+      }
+   };
+
+   const handleDismiss = async (id) => {
+      try {
+         await adminService.dismissNotification(id);
+         await fetchNotifs();
+      } catch (e) {
+         console.error("Failed to dismiss notification", id, e);
       }
    };
    return (
@@ -170,13 +180,31 @@ export const Notifications = () => {
                                     <i className={`bi ${getCategoryIcon(notif.category)} fs-5`}></i>
                                  </div>
                                  <div className="flex-grow-1">
-                                    <div className="d-flex justify-content-between w-100">
-                                       <h6 className={`mb-0 ${notif.status === 'Unread' ? 'fw-bold' : 'text-secondary fw-normal'}`} style={{ fontSize: '0.9rem' }}>{notif.message}</h6>
-                                       <small className="text-secondary ms-2 text-nowrap" style={{ fontSize: '0.7rem' }}>{timeStr}</small>
-                                    </div>
-                                    <div className="d-flex justify-content-between align-items-center mt-1">
-                                       <small style={{ color: getCategoryColor(notif.category), fontSize: '0.75rem' }}>{notif.category}</small>
-                                       {notif.status === 'Unread' && <span className="badge rounded-pill bg-danger" style={{ fontSize: '0.6em' }}>New</span>}
+                                    <div className="d-flex justify-content-between w-100 align-items-start">
+                                       <div>
+                                          <h6 className={`mb-0 ${notif.status === 'Unread' ? 'fw-bold' : 'text-secondary fw-normal'}`} style={{ fontSize: '0.9rem' }}>{notif.message}</h6>
+                                          <div className="d-flex align-items-center mt-1 gap-2">
+                                             <small style={{ color: getCategoryColor(notif.category), fontSize: '0.75rem' }}>{notif.category}</small>
+                                             {notif.status === 'Unread' && <span className="badge rounded-pill bg-danger" style={{ fontSize: '0.6em' }}>New</span>}
+                                             <span className="text-secondary" style={{ fontSize: '0.7rem' }}>• {timeStr}</span>
+                                          </div>
+                                       </div>
+                                       <div className="d-flex gap-1 ms-2">
+                                          {notif.status === 'Unread' && (
+                                             <button className="btn btn-link p-1 text-success border-0" 
+                                                     onClick={() => handleMarkRead(notif.id)} 
+                                                     title="Mark as read"
+                                                     style={{ fontSize: '1.1rem', transition: 'transform 0.2s' }}>
+                                                <i className="bi bi-check2"></i>
+                                             </button>
+                                          )}
+                                          <button className="btn btn-link p-1 text-danger border-0" 
+                                                  onClick={() => handleDismiss(notif.id)} 
+                                                  title="Dismiss"
+                                                  style={{ fontSize: '1.1rem', transition: 'transform 0.2s' }}>
+                                             <i className="bi bi-x"></i>
+                                          </button>
+                                       </div>
                                     </div>
                                  </div>
                               </div>
