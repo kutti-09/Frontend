@@ -15,12 +15,15 @@ export const Login = () => {
     setLoginError("");
     axios.post("http://localhost:8082/user/login", data)
       .then(response => {
-        const { token, role } = response.data;
+        const { token, role, userId, name, email } = response.data;
         console.log("Login success ", token);
         console.log("Role:", role);
 
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
+        if (userId) localStorage.setItem("userId", userId);
+        if (name)   localStorage.setItem("name", name);
+        if (email)  localStorage.setItem("email", email);
 
         if (role === "Viewer") {
           navigate("/home", { replace: true });
